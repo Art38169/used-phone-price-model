@@ -8,4 +8,4 @@ RUN uv sync --frozen --no-dev
 
 COPY . .
 
-CMD ["uv", "run", "python", "src/models/train.py"]
+CMD ["uv", "run", "python", "main.py"]
