@@ -89,6 +89,7 @@ def encode_features(df: pd.DataFrame) -> pd.DataFrame:
             "brand"
         ],
         drop_first=True,
+        dtype = int
     )
 
     return encoded
