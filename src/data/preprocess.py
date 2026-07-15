@@ -1,6 +1,20 @@
 from pathlib import Path
-
 import pandas as pd
+
+
+KEEP_COLUMNS = [
+    "brand",
+    "original_price",
+    "age_months",
+    "condition",
+    "battery_health",
+    "screen_cracked",
+    "body_damage",
+    "repair_history",
+    "water_damage",
+    "market_demand_score",
+    "resale_price",
+]
 
 
 def drop_features(
@@ -78,3 +92,29 @@ def encode_features(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return encoded
+
+
+def preprocess(df: pd.DataFrame) -> pd.DataFrame:
+
+    df = remove_invalid_rows(df)
+
+    drop_columns = [
+        col for col in df.columns
+        if col not in KEEP_COLUMNS
+    ]
+
+    df = drop_features(df, drop_columns)
+
+    df = remove_iqr_outliers(
+        df,
+        [
+            "original_price",
+            "resale_price",
+        ],
+    )
+
+    # Encode categorical features
+    df = encode_features(df)
+
+    return df
+
