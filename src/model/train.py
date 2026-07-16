@@ -14,6 +14,7 @@ from src.model.evaluate import (
     evaluate_model,
     print_metrics,
 )
+from src.model.interpret import interpret_model
 
 
 MODEL_DIR = Path("models")
@@ -109,6 +110,9 @@ def train() -> None:
     models = get_models()
 
     results = []
+    best_model = None
+    best_model_name = ""
+    best_rmse = float("inf")
 
     for model_name, model in models.items():
 
@@ -141,6 +145,11 @@ def train() -> None:
             **metrics,
         })
 
+        if metrics["RMSE"] < best_rmse:
+            best_rmse = metrics["RMSE"]
+            best_model = trained_model
+            best_model_name = model_name
+
     print("\n========== Summary ==========")
 
     results_df = (
@@ -150,4 +159,11 @@ def train() -> None:
     )
 
     print(results_df)
+    print(f"\nBest model: {best_model_name}")
+
+    interpret_model(
+        model=best_model,
+        X_train=X_train,
+        model_name=best_model_name,
+    )
 
