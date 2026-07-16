@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import shap
 
-from src.model.models import BaseModel
+from src.model.model_all import BaseModel
 
 
 RESULT_DIR = Path("results")

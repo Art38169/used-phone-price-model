@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 
 from src.data.load_data import load_data
 from src.data.preprocess import preprocess
-from src.model.models import get_models
+from src.model.model_all import get_models
 from src.model.evaluate import (
     evaluate_model,
     print_metrics,

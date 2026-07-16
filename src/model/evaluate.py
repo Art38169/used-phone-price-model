@@ -4,7 +4,7 @@ from sklearn.metrics import (
     r2_score,
 )
 
-from src.model.models import BaseModel
+from src.model.model_all import BaseModel
 
 
 def evaluate_model(
