@@ -1,4 +1,4 @@
-from src.models.train import train
+from src.model.train import train
 
 
 def main() -> None:
