@@ -4,9 +4,11 @@ from sklearn.metrics import (
     r2_score,
 )
 
+from src.model.models import BaseModel
+
 
 def evaluate_model(
-    model,
+    model: BaseModel,
     X_test,
     y_test,
 ) -> dict[str, float]:
@@ -38,10 +40,7 @@ def print_metrics(
     model_name: str,
     metrics: dict[str, float],
 ) -> None:
-    """
-    Print evaluation metrics.
-    """
-
+    
     print(f"\n===== {model_name} =====")
     print(f"MAE  : {metrics['MAE']:.2f}")
     print(f"RMSE : {metrics['RMSE']:.2f}")

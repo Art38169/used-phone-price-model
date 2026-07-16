@@ -1,15 +1,11 @@
 from pathlib import Path
 
-import joblib
 import pandas as pd
-from lightgbm import LGBMRegressor
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from xgboost import XGBRegressor
 
 from src.data.load_data import load_data
 from src.data.preprocess import preprocess
+from src.model.models import get_models
 from src.model.evaluate import (
     evaluate_model,
     print_metrics,
@@ -46,62 +42,6 @@ def split_data(
     )
 
 
-def get_models() -> dict:
-    return {
-        "linear_regression": LinearRegression(),
-
-        "random_forest": RandomForestRegressor(
-            n_estimators=100,
-            random_state=42,
-            n_jobs=-1,
-        ),
-
-        "xgboost": XGBRegressor(
-            random_state=42,
-            n_estimators=100,
-            learning_rate=0.1,
-        ),
-        "lightgbm": LGBMRegressor(
-            random_state=42,
-            n_estimators=100,
-            learning_rate=0.1,
-        )
-    }
-
-
-def train_model(
-    model,
-    X_train,
-    y_train,
-):
-    model.fit(
-        X_train,
-        y_train,
-    )
-
-    return model
-
-
-def save_model(
-    model,
-    filename: str,
-) -> None:
-
-    MODEL_DIR.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    path = MODEL_DIR / filename
-
-    joblib.dump(
-        model,
-        path,
-    )
-
-    print(f"Saved model to {path}")
-
-
 def train() -> None:
     df = load_dataset()
 
@@ -110,45 +50,44 @@ def train() -> None:
     models = get_models()
 
     results = []
+
     best_model = None
-    best_model_name = ""
     best_rmse = float("inf")
 
-    for model_name, model in models.items():
+    for model in models:
 
-        print(f"\nTraining {model_name}...")
+        print(f"\nTraining {model.name}...")
 
-        trained_model = train_model(
-            model,
+        model.train(
             X_train,
             y_train,
         )
 
         metrics = evaluate_model(
-            trained_model,
+            model,
             X_test,
             y_test,
         )
 
         print_metrics(
-            model_name,
+            model.name,
             metrics,
         )
 
-        save_model(
-            trained_model,
-            f"{model_name}.pkl",
+        model.save(
+            MODEL_DIR / f"{model.name}.pkl",
         )
 
-        results.append({
-            "Model": model_name,
-            **metrics,
-        })
+        results.append(
+            {
+                "Model": model.name,
+                **metrics,
+            }
+        )
 
         if metrics["RMSE"] < best_rmse:
             best_rmse = metrics["RMSE"]
-            best_model = trained_model
-            best_model_name = model_name
+            best_model = model
 
     print("\n========== Summary ==========")
 
@@ -159,11 +98,14 @@ def train() -> None:
     )
 
     print(results_df)
-    print(f"\nBest model: {best_model_name}")
+
+    if best_model is None:
+        raise RuntimeError("No model was trained.")
+
+    print(f"\nBest model: {best_model.name}")
 
     interpret_model(
         model=best_model,
         X_train=X_train,
-        model_name=best_model_name,
+        model_name=best_model.name,
     )
-
