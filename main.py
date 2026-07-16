@@ -1,5 +1,8 @@
-def main():
-    print("Hello from used-phone-price-model!")
+from src.models.train import train
+
+
+def main() -> None:
+    train()
 
 
 if __name__ == "__main__":
