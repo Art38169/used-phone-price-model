@@ -12,25 +12,25 @@ class BaseModel(ABC):
     @property
     @abstractmethod
     def estimator(self):
-        pass
+        raise NotImplementedError
 
     @property
     @abstractmethod
     def name(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def train(self, X_train, y_train):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def predict(self, X):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def save(self, path):
-        pass
-
+        raise NotImplementedError
+    
 class SklearnModel(BaseModel):
 
     @property
